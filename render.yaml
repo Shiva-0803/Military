@@ -29,19 +29,18 @@ services:
   # FRONTEND (Corrected for Render Blueprint)
   - type: web
     name: military-frontend
-    runtime: static # This specifies it's a static site
-    region: singapore
-    plan: free
+    runtime: static
+    plan: free # Static sites are global, no region needed
     rootDir: client
     buildCommand: npm install && npm run build
-    staticPublishPath: ./dist # Distinguishes static site from dynamic web service
+    staticPublishPath: ./dist
     routes:
       - type: rewrite
         source: /*
         destination: /index.html
     envVars:
-      - key: VITE_API_URL
+      - key: VITE_API_HOST
         fromService:
           type: web
           name: military-backend
-          property: url
+          property: host
