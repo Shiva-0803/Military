@@ -7,10 +7,14 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'role', 'base']
 
 class PublicUserSerializer(serializers.ModelSerializer):
-    base_name = serializers.CharField(source='base.name', read_only=True, allow_null=True)
+    base_name = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = ['username', 'role', 'base_name']
+
+    def get_base_name(self, obj):
+        return obj.base.name if obj.base else None
 
 class BaseSerializer(serializers.ModelSerializer):
     class Meta:
