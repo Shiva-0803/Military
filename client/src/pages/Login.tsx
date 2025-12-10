@@ -130,28 +130,43 @@ const Login: React.FC = () => {
                 </form>
 
                 <div className="mt-8 pt-6 border-t border-slate-700/50">
-                    <h3 className="text-xs font-bold text-slate-500 mb-4 uppercase tracking-widest text-center">Authorized Modules</h3>
+                    <h3 className="text-xs font-bold text-slate-500 mb-4 uppercase tracking-widest text-center">Authorized Modules (Click to Auto-fill)</h3>
                     <div className="grid grid-col-1 gap-2 text-xs">
-                        <div className="flex justify-between items-center text-slate-300 bg-slate-950/40 p-2.5 rounded border border-slate-800/50 hover:border-slate-700 transition-colors cursor-help group">
+
+                        {/* ADMIN */}
+                        <div
+                            onClick={() => { setUsername('admin'); setPassword('admin123'); }}
+                            className="flex justify-between items-center text-slate-300 bg-slate-950/40 p-2.5 rounded border border-slate-800/50 hover:border-emerald-500/50 hover:bg-emerald-900/10 transition-all cursor-pointer group"
+                        >
                             <div className="flex items-center">
                                 <span className="w-1.5 h-1.5 bg-purple-500 rounded-full mr-2 opacity-50 group-hover:opacity-100 transition-opacity" />
-                                <span className="font-semibold text-slate-400 group-hover:text-slate-200 transition-colors">ADMIN</span>
+                                <span className="font-semibold text-slate-400 group-hover:text-white transition-colors">ADMIN HQ</span>
                             </div>
-                            <code className="text-emerald-400/90 font-mono tracking-wider">admin / 0803</code>
+                            <code className="text-emerald-400/90 font-mono tracking-wider group-hover:text-emerald-300">admin / admin123</code>
                         </div>
-                        <div className="flex justify-between items-center text-slate-300 bg-slate-950/40 p-2.5 rounded border border-slate-800/50 hover:border-slate-700 transition-colors cursor-help group">
+
+                        {/* COMMANDER */}
+                        <div
+                            onClick={() => { setUsername('commander_north'); setPassword('password123'); }}
+                            className="flex justify-between items-center text-slate-300 bg-slate-950/40 p-2.5 rounded border border-slate-800/50 hover:border-blue-500/50 hover:bg-blue-900/10 transition-all cursor-pointer group"
+                        >
                             <div className="flex items-center">
                                 <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2 opacity-50 group-hover:opacity-100 transition-opacity" />
-                                <span className="font-semibold text-slate-400 group-hover:text-slate-200 transition-colors">COMMAND</span>
+                                <span className="font-semibold text-slate-400 group-hover:text-white transition-colors">NORTHERN CMD</span>
                             </div>
-                            <code className="text-emerald-400/90 font-mono tracking-wider">commander_bragg / 0803</code>
+                            <code className="text-blue-400/90 font-mono tracking-wider group-hover:text-blue-300">commander_north / password123</code>
                         </div>
-                        <div className="flex justify-between items-center text-slate-300 bg-slate-950/40 p-2.5 rounded border border-slate-800/50 hover:border-slate-700 transition-colors cursor-help group">
+
+                        {/* LOGISTICS */}
+                        <div
+                            onClick={() => { setUsername('logistics_north'); setPassword('password123'); }}
+                            className="flex justify-between items-center text-slate-300 bg-slate-950/40 p-2.5 rounded border border-slate-800/50 hover:border-orange-500/50 hover:bg-orange-900/10 transition-all cursor-pointer group"
+                        >
                             <div className="flex items-center">
                                 <span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-2 opacity-50 group-hover:opacity-100 transition-opacity" />
-                                <span className="font-semibold text-slate-400 group-hover:text-slate-200 transition-colors">LOGISTICS</span>
+                                <span className="font-semibold text-slate-400 group-hover:text-white transition-colors">LOGISTICS UNIT</span>
                             </div>
-                            <code className="text-emerald-400/90 font-mono tracking-wider">logistics_bragg / 0803</code>
+                            <code className="text-orange-400/90 font-mono tracking-wider group-hover:text-orange-300">logistics_north / password123</code>
                         </div>
                     </div>
                 </div>

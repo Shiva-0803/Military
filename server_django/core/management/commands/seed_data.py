@@ -55,6 +55,28 @@ class Command(BaseCommand):
         self.stdout.write('Seeding Inventory & History...')
         from core.models import Transaction, User
         
+        # Create Demo Users for specific roles
+        # Base Commander for Northern Command
+        north_base = Base.objects.get(name='Northern Command HQ')
+        if not User.objects.filter(username='commander_north').exists():
+            User.objects.create_user(
+                username='commander_north', 
+                password='password123', 
+                role=User.Role.COMMANDER, 
+                base=north_base
+            )
+            self.stdout.write("Created User: commander_north")
+
+        # Logistics Officer for Northern Command
+        if not User.objects.filter(username='logistics_north').exists():
+            User.objects.create_user(
+                username='logistics_north', 
+                password='password123', 
+                role=User.Role.LOGISTICS, 
+                base=north_base
+            )
+            self.stdout.write("Created User: logistics_north")
+        
         # Create a dummy system user for audit if needed, or just leave null
         # user, _ = User.objects.get_or_create(username='admin', defaults={'role': 'ADMIN'})
 
