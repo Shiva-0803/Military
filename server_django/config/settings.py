@@ -66,7 +66,7 @@ DATABASES = {
     'default': dj_database_url.config(
         default=os.getenv('DATABASE_URL'),
         conn_max_age=600,
-        ssl_require=os.getenv('RENDER', 'False') == 'true' or not DEBUG
+        ssl_require='render.com' in os.getenv('DATABASE_URL', '')
     )
 }
 # Fallback for Windows/PostgreSQL particularities if needed, but dj_database_url usually works.
