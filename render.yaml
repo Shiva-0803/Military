@@ -14,8 +14,8 @@ services:
     rootDir: server_django
     # Inline build command (Safely install deps)
     buildCommand: "pip install --upgrade pip && pip install -r requirements.txt && python manage.py collectstatic --no-input"
-    # Bind to 0.0.0.0:$PORT. Use ';' to ensure Gunicorn starts even if migrate fails (so we can see logs)
-    startCommand: "python manage.py migrate; gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
+    # Bind to 0.0.0.0:$PORT. Migrate, seed admin, then start server.
+    startCommand: "python manage.py migrate; python manage.py seed_admin; gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
       - key: SECRET_KEY
         generateValue: true
