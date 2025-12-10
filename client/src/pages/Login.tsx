@@ -15,6 +15,8 @@ const Login: React.FC = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
     const [error, setError] = useState('');
+    const [usersList, setUsersList] = useState<any[]>([]);
+    const [loadingUsers, setLoadingUsers] = useState(true);
 
     // Slider Logic
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -24,6 +26,20 @@ const Login: React.FC = () => {
         const interval = setInterval(() => {
             setCurrentImageIndex((prev) => (prev + 1) % images.length);
         }, 5000); // Change every 5 seconds
+
+        // Fetch Public Users
+        const fetchUsers = async () => {
+            try {
+                const res = await axios.get(`${API_BASE_URL}/auth/public-users/`);
+                setUsersList(res.data);
+            } catch (error) {
+                console.error("Failed to load demo users", error);
+            } finally {
+                setLoadingUsers(false);
+            }
+        };
+        fetchUsers();
+
         return () => clearInterval(interval);
     }, [images.length]);
 

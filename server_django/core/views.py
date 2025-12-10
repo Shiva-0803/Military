@@ -39,6 +39,12 @@ class RegisterView(generics.CreateAPIView):
         user = User.objects.create_user(username=username, password=password, role=role, base_id=base_id)
         return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
 
+class PublicUserListView(generics.ListAPIView):
+    queryset = User.objects.filter(is_active=True).order_by('role') # Sort for consistency
+    from .serializers import PublicUserSerializer
+    serializer_class = PublicUserSerializer
+    permission_classes = [AllowAny]
+
 class BaseViewSet(viewsets.ModelViewSet):
     queryset = Base.objects.all()
     serializer_class = BaseSerializer

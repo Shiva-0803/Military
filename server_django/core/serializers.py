@@ -6,6 +6,12 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'role', 'base']
 
+class PublicUserSerializer(serializers.ModelSerializer):
+    base_name = serializers.CharField(source='base.name', read_only=True, allow_null=True)
+    class Meta:
+        model = User
+        fields = ['username', 'role', 'base_name']
+
 class BaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Base
