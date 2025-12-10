@@ -12,8 +12,8 @@ services:
     region: singapore
     plan: free
     rootDir: server_django
-    # Inline build command (Only install deps and collectstatic)
-    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --no-input"
+    # Inline build command (Safely install deps)
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt && python manage.py collectstatic --no-input"
     # Bind to 0.0.0.0:$PORT and run migrations on start
     startCommand: "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
