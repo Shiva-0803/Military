@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  BASE_COMMANDER
+  LOGISTICS_OFFICER
+}
+
+enum TransactionType {
+  PURCHASE
+  TRANSFER_IN
+  TRANSFER_OUT
+  ASSIGNMENT
+  EXPENDITURE
+}
+
+model Base {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  location  String
+  
+  users     User[]
+  inventory Inventory[]
+  snapshots InventorySnapshot[]
+  
+  // Explicit relations for clearer tracking
+  outgoingTransfers Transaction[] @relation("FromBase")
+  incomingTransfers Transaction[] @relation("ToBase")
+  
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      Role
+  
+  // Optional: Link user to a base (Null for Admin, Required for Commander)
+  baseId    Int?
+  base      Base?    @relation(fields: [baseId], references: [id])
+  
+  createdAt DateTime @default(now())
+}
+
+model AssetType {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  
+  inventory   Inventory[]
+  snapshots   InventorySnapshot[]
+  transactions Transaction[]
+}
+
+model Inventory {
+  baseId      Int
+  assetTypeId Int
+  quantity    Int      @default(0)
+  
+  base        Base      @relation(fields: [baseId], references: [id])
+  assetType   AssetType @relation(fields: [assetTypeId], references: [id])
+  
+  @@id([baseId, assetTypeId])
+}
+
+// Optimization: Daily/Weekly Snapshots for fast "Opening Balance" scaling
+model InventorySnapshot {
+  id          Int      @id @default(autoincrement())
+  baseId      Int
+  assetTypeId Int
+  quantity    Int
+  date        DateTime @default(now()) // The timestamp of the snapshot
+  
+  base        Base      @relation(fields: [baseId], references: [id])
+  assetType   AssetType @relation(fields: [assetTypeId], references: [id])
+
+  @@index([baseId, date])
+}
+
+model Transaction {
+  id          Int             @id @default(autoincrement())
+  type        TransactionType
+  quantity    Int
+  date        DateTime        @default(now())
+  
+  assetTypeId Int
+  assetType   AssetType       @relation(fields: [assetTypeId], references: [id])
+  
+  // Logistics
+  fromBaseId  Int?
+  toBaseId    Int?
+  fromBase    Base?           @relation("FromBase", fields: [fromBaseId], references: [id])
+  toBase      Base?           @relation("ToBase", fields: [toBaseId], references: [id])
+  
+  // Assignment details
+  recipient   String?         // Name of personnel for Assignments
+  
+  // Note: 
+  // PURCHASE: toBaseId = Purchaser.
+  // TRANSFER: fromBaseId = Sender, toBaseId = Receiver.
+  // ASSIGNMENT: fromBaseId = Assigner.
+  // EXPENDITURE: fromBaseId = Spender.
+  
+  @@index([date])
+  @@index([type])
+  @@index([fromBaseId])
+  @@index([toBaseId])
+}
