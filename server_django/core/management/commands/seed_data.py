@@ -51,28 +51,65 @@ class Command(BaseCommand):
             if created:
                 self.stdout.write(f"Created Asset: {asset.name}")
 
-        # 3. Seed Inventory (Randomized)
-        self.stdout.write('Seeding Inventory...')
+        # 3. Seed Inventory & Transactions
+        self.stdout.write('Seeding Inventory & History...')
+        from core.models import Transaction, User
+        
+        # Create a dummy system user for audit if needed, or just leave null
+        # user, _ = User.objects.get_or_create(username='admin', defaults={'role': 'ADMIN'})
+
         for base in created_bases:
             for asset in created_assets:
-                # Random quantity between 0 and 500
+                # Random quantity between 10 and 500
                 qty = random.randint(10, 500)
                 
-                # Logic: More winter gear in Siachen
                 if 'Siachen' in base.name and 'Winter' in asset.name:
                     qty = random.randint(1000, 5000)
                 
-                # Logic: More tanks in Western/South Western (Plains)
                 if 'Tank' in asset.name and ('Western' in base.name or 'Jaipur' in base.location):
                     qty = random.randint(50, 100)
 
-                obj, created = Inventory.objects.get_or_create(
+                # Create Inventory
+                Inventory.objects.get_or_create(
                     base=base,
                     asset_type=asset,
                     defaults={'quantity': qty}
                 )
-                if not created:
-                    # Update quantity if exists just to vary it slightly on re-runs (optional, skipping for stability)
-                    pass
+
+                # Create 'Purchase' History (to explain this inventory)
+                # We assume 120% was purchased, and 20% might be expended/transferred
+                purchase_qty = int(qty * 1.2) 
+                Transaction.objects.get_or_create(
+                    type=Transaction.Type.PURCHASE,
+                    asset_type=asset,
+                    to_base=base,
+                    quantity=purchase_qty,
+                    defaults={'recipient': 'Central Supply'}
+                )
+
+                # Create 'Expenditure' (some usage)
+                expend_qty = int(qty * 0.1)
+                if expend_qty > 0:
+                    Transaction.objects.create(
+                        type=Transaction.Type.EXPENDITURE,
+                        asset_type=asset,
+                        from_base=base,
+                        quantity=expend_qty,
+                        recipient='Training Exercise'
+                    )
+                
+                # Random Transfers (between bases)
+                if random.random() > 0.7:
+                    other_base = random.choice([b for b in created_bases if b != base])
+                    transfer_qty = int(qty * 0.05)
+                    if transfer_qty > 0:
+                         Transaction.objects.create(
+                            type=Transaction.Type.TRANSFER,
+                            asset_type=asset,
+                            from_base=base,
+                            to_base=other_base,
+                            quantity=transfer_qty,
+                            recipient='Logistics Move'
+                        )
 
         self.stdout.write(self.style.SUCCESS('Successfully seeded Indian Military Data!'))

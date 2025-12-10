@@ -101,32 +101,84 @@ class DashboardView(APIView):
     def get(self, request):
         user = request.user
         
-        # 1. Scope Inventory
-        if user.role == User.Role.ADMIN:
-            total_assets = Inventory.objects.aggregate(total=Sum('quantity'))['total'] or 0
-        else:
-            # Commanders/Logistics only see their base inventory
-            total_assets = Inventory.objects.filter(base=user.base)\
-                .aggregate(total=Sum('quantity'))['total'] or 0
+        # 1. Closing Balance (Current Inventory)
+        inv_qs = Inventory.objects.all()
+        if user.role != User.Role.ADMIN and user.base:
+            inv_qs = inv_qs.filter(base=user.base)
+        
+        closing_balance = inv_qs.aggregate(total=Sum('quantity'))['total'] or 0
 
-        # 2. Scope Recent Transactions
-        # Reuse logic from TransactionViewSet if possible, or duplicate for simplicity here
-        qs = Transaction.objects.all().order_by('-date')
+        # 2. Transactions for flow calculation
+        tx_qs = Transaction.objects.all()
+        
+        # Filter QS based on role
         if user.role == User.Role.ADMIN:
-            recent_qs = qs
-        elif user.role == User.Role.COMMANDER:
-            recent_qs = qs.filter(from_base=user.base) | qs.filter(to_base=user.base)
-        elif user.role == User.Role.LOGISTICS:
-            base_qs = qs.filter(from_base=user.base) | qs.filter(to_base=user.base)
-            recent_qs = base_qs.filter(type__in=[Transaction.Type.PURCHASE, Transaction.Type.TRANSFER])
+            relevant_tx = tx_qs
+        elif user.base:
+            # For Base users, we care about transactions involving their base
+            relevant_tx = tx_qs.filter(from_base=user.base) | tx_qs.filter(to_base=user.base)
         else:
-            recent_qs = qs.none()
+            relevant_tx = tx_qs.none()
 
-        recent_data = TransactionSerializer(recent_qs[:5], many=True).data
+        # Calculate flows
+        # Purchases (Always Incoming)
+        purchases = relevant_tx.filter(
+            type=Transaction.Type.PURCHASE
+        ).aggregate(total=Sum('quantity'))['total'] or 0
+
+        # Expended (Always Outgoing)
+        expended = relevant_tx.filter(
+            type=Transaction.Type.EXPENDITURE
+        ).aggregate(total=Sum('quantity'))['total'] or 0
+
+        # Transfers
+        if user.role == User.Role.ADMIN:
+            # For Admin, Transfers are internal movements, so net effect on "Total System Assets" is 0?
+            # Or should we count total volume moved?
+            # Let's assume Admin sees "System Total". Transfers don't change System Total.
+            # Purchases add to System. Expenditures remove from System.
+            transfer_in = 0
+            transfer_out = 0
+            net_movement = purchases - expended # Admin Net Movement
+        else:
+            # Base View
+            # Transfer In: To this base
+            transfer_in = relevant_tx.filter(
+                type=Transaction.Type.TRANSFER, 
+                to_base=user.base
+            ).aggregate(total=Sum('quantity'))['total'] or 0
+            
+            # Transfer Out: From this base
+            transfer_out = relevant_tx.filter(
+                type=Transaction.Type.TRANSFER, 
+                from_base=user.base
+            ).aggregate(total=Sum('quantity'))['total'] or 0
+
+            # Net Movement (Balance Change excl Expenditure? Frontend logic seemed to exclude Expended from Net Movement popup)
+            # Frontend Logic: Net Movement = Purchases + Transfer In - Transfer Out.
+            # So we stick to that for the "Net Movement" card.
+            net_movement = purchases + transfer_in - transfer_out
+
+        # Opening Balance Calculation
+        # Closing = Opening + (Purchases + TransferIn - TransferOut) - Expended
+        # Closing = Opening + NetMovement - Expended
+        # Opening = Closing - NetMovement + Expended
+        opening_balance = closing_balance - net_movement + expended
+
+        # Recent Transactions List
+        recent_data = TransactionSerializer(relevant_tx.order_by('-date')[:5], many=True).data
         
         return Response({
-            "totalAssets": total_assets,
-            "recentTransactions": recent_data
+            "metrics": {
+                "openingBalance": opening_balance,
+                "netMovement": net_movement,
+                "closingBalance": closing_balance,
+                "expended": expended,
+                "purchases": purchases,
+                "transferIn": transfer_in,
+                "transferOut": transfer_out
+            },
+            "transactions": recent_data
         })
 
 from django.http import JsonResponse
