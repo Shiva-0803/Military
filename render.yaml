@@ -30,7 +30,7 @@ services:
   - type: web
     name: military-frontend
     runtime: static
-    plan: free # Static sites are global, no region needed
+    # plan property removed as it causes validation errors for static sites in blueprints
     rootDir: client
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
