@@ -55,30 +55,42 @@ class Command(BaseCommand):
         self.stdout.write('Seeding Inventory & History...')
         from core.models import Transaction, User
         
-        # Create Demo Users for specific roles
-        # Base Commander for Northern Command
+        # Create Specific Users requested by User
         north_base = Base.objects.get(name='Northern Command HQ')
-        if not User.objects.filter(username='commander_north').exists():
+        
+        # 1. Commander
+        if not User.objects.filter(username='commander').exists():
             User.objects.create_user(
-                username='commander_north', 
-                password='password123', 
+                username='commander', 
+                password='base0803', 
                 role=User.Role.COMMANDER, 
                 base=north_base
             )
-            self.stdout.write("Created User: commander_north")
+            self.stdout.write("Created User: commander")
+        else:
+            u = User.objects.get(username='commander')
+            u.set_password('base0803')
+            u.save()
 
-        # Logistics Officer for Northern Command
-        if not User.objects.filter(username='logistics_north').exists():
+        # 2. Logistics
+        if not User.objects.filter(username='logistic').exists():
             User.objects.create_user(
-                username='logistics_north', 
-                password='password123', 
+                username='logistic', 
+                password='log080323', 
                 role=User.Role.LOGISTICS, 
                 base=north_base
             )
-            self.stdout.write("Created User: logistics_north")
-        
-        # Create a dummy system user for audit if needed, or just leave null
-        # user, _ = User.objects.get_or_create(username='admin', defaults={'role': 'ADMIN'})
+            self.stdout.write("Created User: logistic")
+        else:
+            u = User.objects.get(username='logistic')
+            u.set_password('log080323')
+            u.save()
+
+        # 3. Admin (Ensure password matches request)
+        if User.objects.filter(username='admin').exists():
+            u = User.objects.get(username='admin')
+            u.set_password('admin123')
+            u.save()
 
         for base in created_bases:
             for asset in created_assets:

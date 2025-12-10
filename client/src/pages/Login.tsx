@@ -15,8 +15,6 @@ const Login: React.FC = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
     const [error, setError] = useState('');
-    const [usersList, setUsersList] = useState<any[]>([]);
-    const [loadingUsers, setLoadingUsers] = useState(true);
 
     // Slider Logic
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
