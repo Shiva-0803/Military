@@ -12,6 +12,15 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
+    def post(self, request, *args, **kwargs):
+        try:
+            return super().post(request, *args, **kwargs)
+        except Exception as e:
+            import traceback
+            error_details = traceback.format_exc()
+            print(f"LOGIN ERROR: {error_details}") # Print to logs just in case
+            return Response({"error": str(e), "trace": error_details}, status=status.HTTP_400_BAD_REQUEST)
+
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
