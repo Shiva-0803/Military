@@ -1,2 +1,4 @@
 const apiHost = import.meta.env.VITE_API_HOST;
+console.log("DEBUG: VITE_API_HOST from env:", apiHost);
 export const API_BASE_URL = apiHost ? `https://${apiHost}/api/v1` : (import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1');
+console.log("DEBUG: Final API_BASE_URL:", API_BASE_URL);
