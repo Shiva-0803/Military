@@ -62,13 +62,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # Use dj_database_url to parse the connection string
-DATABASES = {
     'default': dj_database_url.config(
         default=os.getenv('DATABASE_URL'),
         conn_max_age=600,
         ssl_require=os.getenv('RENDER') == 'true'
     )
 }
+print(f"DEBUG: RENDER env var: {os.getenv('RENDER')}")
+print(f"DEBUG: Final DB Config: {DATABASES['default']}")
 # Fallback for Windows/PostgreSQL particularities if needed, but dj_database_url usually works.
 # Make sure psycopg2-binary is installed.
 
