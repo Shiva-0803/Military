@@ -24,20 +24,6 @@ const Login: React.FC = () => {
         const interval = setInterval(() => {
             setCurrentImageIndex((prev) => (prev + 1) % images.length);
         }, 5000); // Change every 5 seconds
-
-        // Fetch Public Users
-        const fetchUsers = async () => {
-            try {
-                const res = await axios.get(`${API_BASE_URL}/auth/public-users/`);
-                setUsersList(res.data);
-            } catch (error) {
-                console.error("Failed to load demo users", error);
-            } finally {
-                setLoadingUsers(false);
-            }
-        };
-        fetchUsers();
-
         return () => clearInterval(interval);
     }, [images.length]);
 
@@ -150,37 +136,37 @@ const Login: React.FC = () => {
                         {/* ADMIN */}
                         <div
                             onClick={() => { setUsername('admin'); setPassword('admin123'); }}
-                            className="flex justify-between items-center text-slate-300 bg-slate-950/40 p-2.5 rounded border border-slate-800/50 hover:border-emerald-500/50 hover:bg-emerald-900/10 transition-all cursor-pointer group"
+                            className="flex justify-between items-center text-slate-300 bg-slate-950/40 p-2.5 rounded border border-slate-800/50 hover:border-purple-500/50 hover:bg-purple-900/10 transition-all cursor-pointer group"
                         >
                             <div className="flex items-center">
                                 <span className="w-1.5 h-1.5 bg-purple-500 rounded-full mr-2 opacity-50 group-hover:opacity-100 transition-opacity" />
-                                <span className="font-semibold text-slate-400 group-hover:text-white transition-colors">ADMIN HQ</span>
+                                <span className="font-semibold text-purple-400 group-hover:text-white transition-colors">ADMIN HQ</span>
                             </div>
-                            <code className="text-emerald-400/90 font-mono tracking-wider group-hover:text-emerald-300">admin / admin123</code>
+                            <code className="text-slate-500 font-mono tracking-wider group-hover:text-purple-300">admin / admin123</code>
                         </div>
 
                         {/* COMMANDER */}
                         <div
-                            onClick={() => { setUsername('commander_north'); setPassword('password123'); }}
+                            onClick={() => { setUsername('commander'); setPassword('base0803'); }}
                             className="flex justify-between items-center text-slate-300 bg-slate-950/40 p-2.5 rounded border border-slate-800/50 hover:border-blue-500/50 hover:bg-blue-900/10 transition-all cursor-pointer group"
                         >
                             <div className="flex items-center">
                                 <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2 opacity-50 group-hover:opacity-100 transition-opacity" />
-                                <span className="font-semibold text-slate-400 group-hover:text-white transition-colors">NORTHERN CMD</span>
+                                <span className="font-semibold text-blue-400 group-hover:text-white transition-colors">COMMANDER</span>
                             </div>
-                            <code className="text-blue-400/90 font-mono tracking-wider group-hover:text-blue-300">commander_north / password123</code>
+                            <code className="text-slate-500 font-mono tracking-wider group-hover:text-blue-300">commander / base0803</code>
                         </div>
 
                         {/* LOGISTICS */}
                         <div
-                            onClick={() => { setUsername('logistics_north'); setPassword('password123'); }}
+                            onClick={() => { setUsername('logistic'); setPassword('log080323'); }}
                             className="flex justify-between items-center text-slate-300 bg-slate-950/40 p-2.5 rounded border border-slate-800/50 hover:border-orange-500/50 hover:bg-orange-900/10 transition-all cursor-pointer group"
                         >
                             <div className="flex items-center">
                                 <span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-2 opacity-50 group-hover:opacity-100 transition-opacity" />
-                                <span className="font-semibold text-slate-400 group-hover:text-white transition-colors">LOGISTICS UNIT</span>
+                                <span className="font-semibold text-orange-400 group-hover:text-white transition-colors">LOGISTICS</span>
                             </div>
-                            <code className="text-orange-400/90 font-mono tracking-wider group-hover:text-orange-300">logistics_north / password123</code>
+                            <code className="text-slate-500 font-mono tracking-wider group-hover:text-orange-300">logistic / log080323</code>
                         </div>
                     </div>
                 </div>
