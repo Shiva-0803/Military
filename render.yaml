@@ -26,7 +26,7 @@ services:
         value: "true"
       - key: DATABASE_URL
         fromDatabase:
-          name: military-db
+          name: military-db-sg
           property: externalConnectionString
       - key: PYTHON_VERSION
         value: 3.11.0
