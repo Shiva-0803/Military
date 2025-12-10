@@ -1,5 +1,5 @@
 databases:
-  - name: military-db
+  - name: military-db-sg
     databaseName: military
     user: military_user
     plan: free
