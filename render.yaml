@@ -14,8 +14,8 @@ services:
     rootDir: server_django
     # Inline build command (Safely install deps)
     buildCommand: "pip install --upgrade pip && pip install -r requirements.txt && python manage.py collectstatic --no-input"
-    # Bind to 0.0.0.0:$PORT (Migration temporarily removed for debugging)
-    startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --log-level debug"
+    # Bind to 0.0.0.0:$PORT and run migrations (Restored now that env is stable)
+    startCommand: "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
       - key: SECRET_KEY
         generateValue: true
