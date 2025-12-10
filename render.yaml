@@ -3,6 +3,7 @@ databases:
     databaseName: military
     user: military_user
     plan: free
+    region: singapore
 
 services:
   # BACKEND
