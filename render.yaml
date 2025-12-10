@@ -12,10 +12,10 @@ services:
     region: singapore
     plan: free
     rootDir: server_django
-    # Inline build command to avoid Windows CRLF line-ending issues with build.sh
-    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate"
-    # Bind to 0.0.0.0:$PORT so Render can access the service
-    startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
+    # Inline build command (Only install deps and collectstatic)
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --no-input"
+    # Bind to 0.0.0.0:$PORT and run migrations on start
+    startCommand: "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
       - key: SECRET_KEY
         generateValue: true
