@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import RegisterView, BaseViewSet, AssetTypeViewSet, TransactionViewSet, DashboardView, CustomTokenObtainPairView
+from .views import RegisterView, BaseViewSet, AssetTypeViewSet, TransactionViewSet, DashboardView, CustomTokenObtainPairView, PublicUserListView
 
 router = DefaultRouter()
 router.register(r'bases', BaseViewSet)
