@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Truck, ArrowRight, Calendar, MapPin, Package } from 'lucide-react';
+import { Truck, ArrowRight, Calendar } from 'lucide-react';
 import { API_BASE_URL } from '../config';
 
 interface Base {

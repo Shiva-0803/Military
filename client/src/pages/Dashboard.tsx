@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { TrendingUp, ArrowDownLeft, ArrowUpRight, CheckCircle, AlertCircle, X } from 'lucide-react';
+import { TrendingUp, CheckCircle, AlertCircle, X } from 'lucide-react';
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API_BASE_URL } from '../config';
 
 const Dashboard: React.FC = () => {
-    const { user } = useAuth();
+    const { } = useAuth();
     const [metrics, setMetrics] = useState<any>(null);
     const [transactions, setTransactions] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
