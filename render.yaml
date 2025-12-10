@@ -2,14 +2,14 @@ databases:
   - name: military-db
     databaseName: military
     user: military_user
-    plan: free # Note: Render Free Tier databases expire after 90 days.
+    plan: free
 
 services:
-  # BACKEND (Django)
+  # BACKEND
   - type: web
     name: military-backend
     runtime: python
-    region: singapore # or ohio, frankfurt, etc.
+    region: singapore
     plan: free
     rootDir: server_django
     buildCommand: ./build.sh
@@ -26,15 +26,15 @@ services:
       - key: PYTHON_VERSION
         value: 3.11.0
 
-  # FRONTEND (React)
-  - type: static
+  # FRONTEND (Corrected for Render Blueprint)
+  - type: web
     name: military-frontend
-    runtime: static
+    runtime: static # This specifies it's a static site
     region: singapore
     plan: free
     rootDir: client
     buildCommand: npm install && npm run build
-    publishDir: dist
+    staticPublishPath: ./dist # Distinguishes static site from dynamic web service
     routes:
       - type: rewrite
         source: /*
